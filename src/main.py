@@ -2,16 +2,42 @@ import argparse
 
 from flask import Flask
 from flask import request
+from flask import redirect
 
-from spotify.session import Session
+from spotify import auth
+from spotify.connection import Connection
+
+from session.manager import SessionManager
+from session.session import Session
+
 
 app = Flask(__name__)
-session = None
+
+manager = SessionManager()
+conn = None
+
+@app.route('/', methods=['GET'])
+def authorize():
+    code = request.args.get('code');
+    acc, ref = auth.get_tokens(conn.client_id, conn.client_secret, code)
+    session = Session(conn.client_id, conn.client_secret, acc, ref)
+    id = manager.add(session)
+
+    return redirect(f"http://localhost:3000/party/{id}", code=302)
+
+@app.route('/p', methods=['GET'])
+def playlists():
+    sess = manager.get(1)
+    tracks = sess.api.current_user_saved_tracks()
+    print(tracks)
+
+    return "Hello"
+
 
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('q')
-    return session.api.search(query)
+    return client.api.search(query)
 
 
 if __name__ == '__main__':
@@ -23,9 +49,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Create api
-    session = Session(args.client_id, args.secret_id)
-    results = session.api.search("I Wanna Get Better")
-    print(results)
+    conn = Connection(args.client_id, args.secret_id)
 
     # Run app
     app.run()
