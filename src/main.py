@@ -1,18 +1,24 @@
 import argparse
 
 from flask import Flask
-from flask import request
 
-from spotify.session import Session
+from handlers.auth import AuthHandler
+from handlers.search import SearchHandler
+from spotify.connection import Connection
+from session.manager import SessionManager
 
 app = Flask(__name__)
-session = None
+
+manager = SessionManager()
+conn = None
+
+@app.route('/', methods=['GET'])
+def authorize():
+    return AuthHandler().handle(conn, manager)
 
 @app.route('/search', methods=['GET'])
 def search():
-    query = request.args.get('q')
-    return session.api.search(query)
-
+    return SearchHandler().handle(conn, manager)
 
 if __name__ == '__main__':
 
@@ -23,9 +29,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Create api
-    session = Session(args.client_id, args.secret_id)
-    results = session.api.search("I Wanna Get Better")
-    print(results)
+    conn = Connection(args.client_id, args.secret_id)
 
     # Run app
     app.run()
