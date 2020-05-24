@@ -15,7 +15,7 @@ from spotify.connection import Connection
 class HandlerException(Exception):
 
     def __init__(self, message):
-        Exception.__init__(self)
+        super.__init__(self)
         self.resp = APIResponse(400, {'message': message}).resp
 
 class Handler(ABC):
@@ -59,7 +59,7 @@ class Handler(ABC):
 class SSEHandler(Handler):
 
     def __init__(self, subscription):
-        Handler.__init__(self)
+        super.__init__(self)
         self.sub = subscription
 
     def handle(self):
@@ -83,7 +83,7 @@ class SSEHandler(Handler):
 class SSEUpdateHandler(Handler):
 
     def __init__(self, subscription):
-        Handler.__init__(self)
+        super.__init__(self)
         self.sub = subscription
 
     def handle(self):

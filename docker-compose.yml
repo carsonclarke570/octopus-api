@@ -3,8 +3,6 @@ services:
     api:
         build: .
         environment: 
-            - CLIENT_ID=d85f7cf27fea462498777339f76c038b
-            - CLIENT_SECRET=069aaa68855142a3838cf7b333cabcd9
             - PYTHONUNBUFFERED=1
         ports:
             - "5000:5000"

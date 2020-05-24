@@ -10,6 +10,7 @@ class Session(Serializable):
         self.queue = []
 
     def refresh(self):
+        # TODO: Implement
         pass
 
     def encode(self):
