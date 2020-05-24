@@ -1,23 +1,48 @@
 from flask import request
 import time
 
-from handlers.handler import SSEHandler, HandlerException
+from handlers.handler import Handler
+from handlers.handler import HandlerException
+from handlers.handler import SSEHandler
+from handlers.handler import SSEUpdateHandler
 from handlers.response import APIResponse
 
-class ReadQueueHandler(SSEHandler):
+class ReadQueueHandler(Handler):
 
     def __init__(self):
-        self.count = 0
-        self.timer = time.perf_counter()
+        super.__init__(self)
 
-    def run(self, connection, manager):
-        self.count += 1
-        return APIResponse(200, {"yeet": self.count})
+    def run(self):
+        s = self.session()
+        return APIResponse(200, {"songs": s.queue})
 
-    def check(self, connection, manager):
-        now = time.perf_counter()
-        if  now - self.timer > 5.0:
-            self.timer = now
-            return True
 
-        return False
+class StreamQueueHandler(SSEHandler):
+
+    def __init__(self):
+        super.__init__(self, 'queue')
+
+    def run(self):
+        s = self.session()
+        return APIResponse(200, {"songs": s.queue})
+
+class AddToQueueHandler(SSEUpdateHandler):
+
+    def __init__(self):
+        SSEUpdateHandler.__init__(self, 'queue')
+
+    def run(self):
+        id = self.args.get('session')
+        if id is None:
+            raise HandlerException('Missing "session" query parameter')
+
+        song = self.args.get('song')
+        if song is None:
+            raise HandlerException('Missing "song" query parameter')
+
+        s = self.session()
+        s.queue.append(song)
+
+        return APIResponse(200, {"status": "success"})
+
+

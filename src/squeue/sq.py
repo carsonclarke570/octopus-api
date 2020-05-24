@@ -1,6 +1,8 @@
 
+from serial.serialize import Serializable
 
-class SongQueue:
+class SongQueue():
+
     def __init__(self):
         self.queue = []
 
