@@ -1,4 +1,5 @@
 from song import Song
+from handlers.handler import HandlerException
 
 
 class SongQueue:
@@ -32,7 +33,8 @@ class SongQueue:
         :return:
         """
         new_song = Song(code, 1, ip)
-        assert (new_song not in self.queue), "No duplicates allowed in queue"
+        if new_song in self.queue:
+            raise HandlerException("Song already exists in queue")
         self.queue.append(new_song)
         self.update()
 
@@ -54,8 +56,9 @@ class SongQueue:
         """
         idx = self.queue.index(Song(code, 0, 0))
         song = self.queue[idx]
-        assert (ip not in song.get_upvoted())      # No duplicate upvotes
-        if ip in song.get_downvoted():             # User cannot upvote and downvote
+        if ip not in song.get_upvoted():
+            raise HandlerException("User has already upvoted")  # No duplicate upvotes
+        if ip in song.get_downvoted():                          # User cannot upvote and downvote
             song.remove_downvoted(ip)
         song.upvote(ip)
         self.update()
@@ -70,7 +73,8 @@ class SongQueue:
         """
         idx = self.queue.index(Song(code, 0, 0))
         song = self.queue[idx]
-        assert (ip not in song.get_downvoted())  # No duplicate downvotes
+        if ip not in song.get_downvoted():
+            raise HandlerException("User has already upvoted")  # No duplicate upvotes
         if ip in song.get_upvoted():             # User cannot upvote and downvote
             song.remove_upvoted(ip)
         song.downvote(ip)
@@ -152,6 +156,3 @@ def test():
         print(testQueue)
     except:
         print("Successfully restricted user from downvoting doubly")
-
-
-test()
