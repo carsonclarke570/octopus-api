@@ -1,7 +1,8 @@
 from flask import request
 
-from handlers.handler import Handler, HandlerException
-from handlers.response import APIResponse
+from handlers.handler import Handler
+from handlers import APIResponse
+from handlers import HandlerException
 from spotify import auth
 from session.session import Session
 from session.manager import SessionManager

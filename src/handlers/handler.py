@@ -3,20 +3,16 @@ from abc import abstractmethod
 import json
 import os
 
+from flask import make_response
 from flask import redirect
 from flask import Response
 from flask import request
 from flask import g
 
-from handlers.response import APIResponse
+from handlers import APIResponse
+from handlers import HandlerException
 from session.manager import SessionManager
 from spotify.connection import Connection
-
-class HandlerException(Exception):
-
-    def __init__(self, message):
-        super.__init__(self)
-        self.resp = APIResponse(400, {'message': message}).resp
 
 class Handler(ABC):
 
@@ -24,6 +20,7 @@ class Handler(ABC):
         self.manager = SessionManager()
         self.conn = self.connection()
         self.args = request.args
+        self.body = request.get_json()
 
     @abstractmethod
     def run(self):
@@ -49,17 +46,21 @@ class Handler(ABC):
         try:
             result = self.run()
         except HandlerException as e:
-            return e.resp
+            resp = make_response(e.resp)
+            resp.headers['Access-Control-Allow-Origin'] = '*'
+            return resp
 
         if result.redirect is not None:
             return redirect(result.redirect, code=result.resp['code'])
 
-        return result.resp
+        resp = make_response(result.resp)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
 
 class SSEHandler(Handler):
 
     def __init__(self, subscription):
-        super.__init__(self)
+        Handler.__init__(self)
         self.sub = subscription
 
     def handle(self):
@@ -83,7 +84,7 @@ class SSEHandler(Handler):
 class SSEUpdateHandler(Handler):
 
     def __init__(self, subscription):
-        super.__init__(self)
+        Handler.__init__(self)
         self.sub = subscription
 
     def handle(self):
@@ -93,5 +94,4 @@ class SSEUpdateHandler(Handler):
 
         resp = super().handle()
         self.manager.red.publish(self.sub + id, u'')
-        self.manager.update(id, s)
         return resp

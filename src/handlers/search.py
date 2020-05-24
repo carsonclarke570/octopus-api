@@ -1,8 +1,9 @@
 from flask import request
 
 from spotify.connection import Connection, ConnectionException
-from handlers.handler import Handler, HandlerException
-from handlers.response import APIResponse
+from handlers import APIResponse
+from handlers import HandlerException
+from handlers.handler import Handler
 
 class SearchHandler(Handler):
 
