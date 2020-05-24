@@ -25,16 +25,16 @@ def authorize():
 def search():
     return SearchHandler().handle()
 
-@api.route('/stream/queue', methods=['GET'])
-def stream_queue():
-    return StreamQueueHandler().handle()
-
 @api.route('/queue', methods=['GET', 'POST'])
 def queue():
     if request.method == 'GET':
         return ReadQueueHandler().handle()
     if request.method == 'POST':
         return AddToQueueHandler().handle()
+
+@api.route('/stream/queue', methods=['GET'])
+def stream_queue():
+    return StreamQueueHandler().handle()
 
 def create():
     print ("Initializing API")
