@@ -8,11 +8,11 @@ from flask import g
 from flask import request
 import redis
 
-from handlers.auth import AuthHandler
-from handlers.search import SearchHandler
-from handlers.queue import AddToQueueHandler
-from handlers.queue import ReadQueueHandler
-from handlers.queue import StreamQueueHandler
+from web.handlers.auth import AuthHandler
+from web.handlers.search import SearchHandler
+from web.handlers.queue import AddToQueueHandler
+from web.handlers.queue import ReadQueueHandler
+from web.handlers.queue import StreamQueueHandler
 
 # API state
 api = Blueprint('api', __name__)
@@ -35,6 +35,7 @@ def queue():
 @api.route('/stream/queue', methods=['GET'])
 def stream_queue():
     return StreamQueueHandler().handle()
+
 
 def create():
     print ("Initializing API")
