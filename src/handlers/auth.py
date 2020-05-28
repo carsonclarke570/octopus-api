@@ -1,21 +1,24 @@
 from flask import request
 
-from handlers.handler import Handler, HandlerException
-from handlers.response import APIResponse
+from handlers.handler import Handler
+from handlers import APIResponse
+from handlers import HandlerException
 from spotify import auth
 from session.session import Session
+from session.manager import SessionManager
 
 class AuthHandler(Handler):
 
-    def run(self, connection, manager):
-        code = request.args.get('code');
+    def run(self):
+        code = self.args.get('code');
         if code is None:
             raise HandlerException('Missing "code" query parameter!')
 
-        acc, ref = auth.get_tokens(connection.client_id, connection.client_secret, code)
+        c = self.conn
+        acc, ref = auth.get_tokens(c.client_id, c.client_secret, code)
         if acc is None or ref is None:
             raise HandlerException('Failed to retrieve access and refresh tokens')
 
-        id = manager.add(Session(connection.client_id, connection.client_secret, acc, ref))
+        id = self.manager.add(Session(acc, ref))
         
         return APIResponse(302, {}, f"http://localhost:3000/party/{id}")

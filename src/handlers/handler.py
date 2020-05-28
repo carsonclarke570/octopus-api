@@ -1,27 +1,97 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
+import json
+import os
+
+from flask import make_response
 from flask import redirect
+from flask import Response
+from flask import request
+from flask import g
 
-from handlers.response import APIResponse
-
-class HandlerException(Exception):
-
-    def __init__(self, message):
-        Exception.__init__(self)
-        self.resp = APIResponse(400, {'message': message}).resp
+from handlers import APIResponse
+from handlers import HandlerException
+from session.manager import SessionManager
+from spotify.connection import Connection
 
 class Handler(ABC):
 
+    def __init__(self, subscription=None):
+        self.manager = SessionManager()
+        self.conn = self.connection()
+        self.args = request.args
+        self.body = request.get_json()
+
     @abstractmethod
-    def run(self, connection, manager):
+    def run(self):
         pass
 
-    def handle(self, connection, manager):
+    def connection(self):
+        if 'connection' not in g:
+            client_id = os.environ.get('CLIENT_ID')
+            secret_id = os.environ.get('CLIENT_SECRET')
+            g.connection = Connection(client_id, secret_id)
+
+        return g.connection
+
+    def session(self):
+        id = self.args.get('session')
+        if id is None:
+            raise HandlerException('Missing "session" query parameter')
+
+        return self.manager.get(id)     
+
+
+    def handle(self):
         try:
-            result = self.run(connection, manager)
+            result = self.run()
         except HandlerException as e:
-            return e.resp
+            resp = make_response(e.resp)
+            resp.headers['Access-Control-Allow-Origin'] = '*'
+            return resp
 
         if result.redirect is not None:
             return redirect(result.redirect, code=result.resp['code'])
 
-        return result.resp
+        resp = make_response(result.resp)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
+
+class SSEHandler(Handler):
+
+    def __init__(self, subscription):
+        Handler.__init__(self)
+        self.sub = subscription
+
+    def handle(self):
+
+        id = self.args.get('session')
+        if id is None:
+            return HandlerException('Missing "session" query parameter').resp
+
+        def stream():
+            ps = self.manager.red.pubsub()
+            ps.subscribe(self.sub + id)
+
+            for message in ps.listen():
+                if message['type'] == 'message':
+                    yield 'data: ' + json.dumps(self.run().resp) + '\n\n'
+                    
+        resp = Response(stream(),  mimetype="text/event-stream")
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
+
+class SSEUpdateHandler(Handler):
+
+    def __init__(self, subscription):
+        Handler.__init__(self)
+        self.sub = subscription
+
+    def handle(self):
+        id = self.args.get('session')
+        if id is None:
+            return HandlerException('Missing "session" query parameter').resp
+
+        resp = super().handle()
+        self.manager.red.publish(self.sub + id, u'')
+        return resp

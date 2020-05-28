@@ -1,21 +1,32 @@
+from flask import g
+import redis
+
+from session.session import Session
 
 class SessionManager:
 
-    SEED = 0
-
     def __init__(self):
-        self.sessions = {}
+        self.red = self.get_redis()
+
+    def get_redis(self):
+        if 'red' not in g:
+            g.red = redis.Redis(host='redis_db')
+
+        return g.red
 
     def add(self, session):
-        SessionManager.SEED = SessionManager.SEED + 1
-        self.sessions[SessionManager.SEED] = session
-        return SessionManager.SEED
+        id = int(self.red.get('session_seed')) + 1
+        self.red.set('s' + str(id), session.encode())
+        self.red.set('session_seed', id)
+        return id
 
     def get(self, id):
-        return self.sessions[id]
+        data = self.red.get('s' + str(id))
+        return Session.decode(data)
+
+    def update(self, id, session):
+        data = session.encode()
+        self.red.set('s' + str(id), data)
 
     def remove(self, id):
-        del self.sessions[id]
-
-    def clear(self):
-        self.sessions .clear()
+        self.red.delete('s' + str(id))
