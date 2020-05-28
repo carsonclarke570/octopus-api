@@ -9,4 +9,4 @@ def test_eq():
 
     three = Song("Code2", 2)
     assert one != three
-    assert two != three
+    assert two == three
