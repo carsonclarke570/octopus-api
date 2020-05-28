@@ -28,14 +28,14 @@ class SongQueue(Serializable):
         self.queue.pop(0)
         return tmp
 
-    def add(self, code, ip):
+    def add(self, code, cid):
         """
         Adds a new song to the queue
         :param code: spotify code of song to add
-        :param ip: ip of user who added this song
+        :param cid: id of user who added this song
         :return:
         """
-        new_song = Song(code, 1, ip)
+        new_song = Song(code, 1, cid)
         if new_song in self.queue:
             raise HandlerException("Song already exists in queue")
         
@@ -50,42 +50,42 @@ class SongQueue(Serializable):
         """
         pass
 
-    def upvote(self, code, ip):
+    def upvote(self, code, cid):
         """
         Upvotes the song in the queue with the matching spotify code
-        AssertionError if the ip has already upvoted
+        AssertionError if the id has already upvoted
         :param code: spotify code of song to upvote
-        :param ip: ip of user who upvoted this song
+        :param cid: id of user who upvoted this song
         :return:
         """
         idx = self.queue.index(Song(code, 0, 0))
         song = self.queue[idx]
-        if ip not in song.get_upvoted():
+        if cid not in song.get_upvoted():
             raise HandlerException("User has already upvoted")  # No duplicate upvotes
 
-        if ip in song.get_downvoted():                          # User cannot upvote and downvote
-            song.remove_downvoted(ip)
+        if cid in song.get_downvoted():                          # User cannot upvote and downvote
+            song.remove_downvoted(cid)
 
-        song.upvote(ip)
+        song.upvote(cid)
         self.update()
 
-    def downvote(self, code, ip):
+    def downvote(self, code, cid):
         """
         Downvotes the song in the queue with the matchin spotify code
-        AssertionError if the ip has already downvoted
+        AssertionError if the id has already downvoted
         :param code: spotify code of song to downvote
-        :param ip: ip of user who downvoted this song
+        :param cid: id of user who downvoted this song
         :return:
         """
         idx = self.queue.index(Song(code, 0, 0))
         song = self.queue[idx]
-        if ip not in song.get_downvoted():
+        if cid not in song.get_downvoted():
             raise HandlerException("User has already upvoted")  # No duplicate upvotes
 
-        if ip in song.get_upvoted():             # User cannot upvote and downvote
-            song.remove_upvoted(ip)
+        if cid in song.get_upvoted():             # User cannot upvote and downvote
+            song.remove_upvoted(cid)
 
-        song.downvote(ip)
+        song.downvote(cid)
         self.update()
 
     def update(self):
@@ -133,6 +133,7 @@ def test():
     except:
         print("Failed to add unique songs.  Something must be wrong...")
 
+    # Try to add duplicate song, should fail
     # Try to add duplicate song, should fail
     try:
         testQueue.add("A", 0)

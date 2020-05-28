@@ -23,20 +23,20 @@ class Song(Serializable):
     def __repr__(self):
         return "(" + self.code + ", " + str(self.votes) + ")"
 
-    def upvote(self, id):
+    def upvote(self, cid):
         self.votes += 1
-        self.upvoted.append(id)
+        self.upvoted.append(cid)
 
-    def downvote(self, id):
+    def downvote(self, cid):
         self.votes -= 1
-        self.downvoted.append(id)
+        self.downvoted.append(cid)
 
-    def remove_upvoted(self, id):
-        self.upvoted.remove(id)
+    def remove_upvoted(self, cid):
+        self.upvoted.remove(cid)
         self.votes -= 1
 
-    def remove_downvoted(self, id):
-        self.downvoted.remove(id)
+    def remove_downvoted(self, cid):
+        self.downvoted.remove(cid)
         self.votes += 1
 
     def encode(self):
