@@ -1,8 +1,11 @@
-from song import Song
+import json
+
 from handlers.handler import HandlerException
+from serial.serialize import Serializable
+from squeue.song import Song
 
+class SongQueue(Serializable):
 
-class SongQueue:
     def __init__(self):
         self.queue = []
 
@@ -35,6 +38,7 @@ class SongQueue:
         new_song = Song(code, 1, ip)
         if new_song in self.queue:
             raise HandlerException("Song already exists in queue")
+        
         self.queue.append(new_song)
         self.update()
 
@@ -58,8 +62,10 @@ class SongQueue:
         song = self.queue[idx]
         if ip not in song.get_upvoted():
             raise HandlerException("User has already upvoted")  # No duplicate upvotes
+
         if ip in song.get_downvoted():                          # User cannot upvote and downvote
             song.remove_downvoted(ip)
+
         song.upvote(ip)
         self.update()
 
@@ -75,8 +81,10 @@ class SongQueue:
         song = self.queue[idx]
         if ip not in song.get_downvoted():
             raise HandlerException("User has already upvoted")  # No duplicate upvotes
+
         if ip in song.get_upvoted():             # User cannot upvote and downvote
             song.remove_upvoted(ip)
+
         song.downvote(ip)
         self.update()
 
@@ -93,6 +101,22 @@ class SongQueue:
         :return: the song queue data structure
         """
         return self.queue
+
+    def encode(self):
+        songs = []
+        for s in self.queue:
+            songs.append(s.encode())
+
+        return json.dumps(songs)
+
+    @classmethod
+    def decode(cls, data):
+        data = json.loads(data)
+        q = cls()
+        for x in data:
+            q.queue.append(Song.decode(x))
+            
+        return q
 
 
 def test():
