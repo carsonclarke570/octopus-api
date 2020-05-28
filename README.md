@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/carsonclarke570/octopus-api/branch/master/graph/badge.svg)](https://codecov.io/gh/carsonclarke570/octopus-api)
+[![Code Coverage](https://codecov.io/gh/carsonclarke570/octopus-api/branch/master/graph/badge.svg)](https://codecov.io/gh/carsonclarke570/octopus-api) ![Unit Tests](https://github.com/carsonclarke570/octopus-api/workflows/UnitTests/badge.svg?branch=master)
 
 # Octopus API
 
