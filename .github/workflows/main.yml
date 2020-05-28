@@ -15,6 +15,9 @@ jobs:
     # Runs a single command using the runners shell
     - name: Install Deps
       run: pip3 install -r requirements.txt
+
+    - name: Install pytest
+      run: pip3 install pytest pytest-cov
     
     - name: Run Tests
       run: pytest --cov=.coverage src/
