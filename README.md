@@ -2,7 +2,7 @@
 
 ## Instructions
 
-### Prequisites
+### Prerequisites
 
 Prior to running the project please install `Docker`. 
 
