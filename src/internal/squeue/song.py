@@ -1,6 +1,6 @@
 import json
 
-from serial.serialize import Serializable
+from util.serial.serialize import Serializable
 
 class Song(Serializable):
 

@@ -1,8 +1,8 @@
 import json
 
-from handlers.handler import HandlerException
-from serial.serialize import Serializable
-from squeue.song import Song
+from web.handlers import HandlerException
+from util.serial.serialize import Serializable
+from internal.squeue.song import Song
 
 class SongQueue(Serializable):
 
