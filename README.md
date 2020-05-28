@@ -1,3 +1,5 @@
+![Unit Tests](https://github.com/carsonclarke570/octopus-api/workflows/UnitTests/badge.svg?branch=master)
+
 # Octopus API
 
 ## Instructions
