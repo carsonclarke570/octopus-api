@@ -1,3 +1,5 @@
 Flask
+pytest
+pytest-cov
 redis
 requests
