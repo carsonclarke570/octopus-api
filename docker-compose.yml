@@ -4,8 +4,6 @@ services:
         build: .
         environment: 
             - PYTHONUNBUFFERED=1
-            - CLIENT_ID=d85f7cf27fea462498777339f76c038b
-            - CLIENT_SECRET=069aaa68855142a3838cf7b333cabcd9
         ports:
             - "5000:5000"
         depends_on:
