@@ -19,22 +19,29 @@ api = Blueprint('api', __name__)
 
 @api.route('/', methods=['GET'])
 def authorize():
-    return AuthHandler().handle()
+    return AuthHandler(args=request.args).handle()
 
 @api.route('/search', methods=['GET'])
 def search():
-    return SearchHandler().handle()
+    return SearchHandler(args=request.args).handle()
 
 @api.route('/queue', methods=['GET', 'POST'])
 def queue():
     if request.method == 'GET':
-        return ReadQueueHandler().handle()
+        return ReadQueueHandler(
+            args=request.args
+        ).handle()
     if request.method == 'POST':
-        return AddToQueueHandler().handle()
+        return AddToQueueHandler(
+            args=request.args, 
+            body=request.get_json()
+        ).handle()
 
 @api.route('/stream/queue', methods=['GET'])
 def stream_queue():
-    return StreamQueueHandler().handle()
+    return StreamQueueHandler(
+        args=request.args
+    ).handle()
 
 
 def create():

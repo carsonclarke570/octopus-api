@@ -35,7 +35,7 @@ class SongQueue(Serializable):
         :param cid: id of user who added this song
         :return:
         """
-        new_song = Song(code, 1, cid)
+        new_song = Song(code, cid)
         if new_song in self.queue:
             raise HandlerException("Song already exists in queue")
         
@@ -58,7 +58,7 @@ class SongQueue(Serializable):
         :param cid: id of user who upvoted this song
         :return:
         """
-        idx = self.queue.index(Song(code, 0, 0))
+        idx = self.queue.index(Song(code, 0))
         song = self.queue[idx]
         if cid not in song.get_upvoted():
             raise HandlerException("User has already upvoted")  # No duplicate upvotes
@@ -77,7 +77,7 @@ class SongQueue(Serializable):
         :param cid: id of user who downvoted this song
         :return:
         """
-        idx = self.queue.index(Song(code, 0, 0))
+        idx = self.queue.index(Song(code, 0))
         song = self.queue[idx]
         if cid not in song.get_downvoted():
             raise HandlerException("User has already upvoted")  # No duplicate upvotes

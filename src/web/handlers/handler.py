@@ -15,11 +15,10 @@ from web.handlers import HandlerException
 
 class Handler(ABC):
 
-    def __init__(self):
+    def __init__(self, args=None, body=None):
         self.manager = SessionManager()
-        self.conn = self.connection()
-        self.args = request.args
-        self.body = request.get_json()
+        self.args = args
+        self.body = body
 
     @abstractmethod
     def run(self):
@@ -40,7 +39,6 @@ class Handler(ABC):
 
         return self.manager.get(id)     
 
-
     def handle(self):
         try:
             result = self.run()
@@ -58,8 +56,8 @@ class Handler(ABC):
 
 class SSEHandler(Handler):
 
-    def __init__(self, subscription):
-        Handler.__init__(self)
+    def __init__(self, subscription, args=None, body=None):
+        Handler.__init__(self, args, body)
         self.sub = subscription
 
     def handle(self):
@@ -82,8 +80,8 @@ class SSEHandler(Handler):
 
 class SSEUpdateHandler(Handler):
 
-    def __init__(self, subscription):
-        Handler.__init__(self)
+    def __init__(self, subscription, args=None, body=None):
+        Handler.__init__(self, args, body)
         self.sub = subscription
 
     def handle(self):

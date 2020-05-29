@@ -22,6 +22,6 @@ class TestSong:
 
     def test_not_lt(self):
         self.song1.upvote(3)
-        assert (self.song1 < self.song2 == False)
+        assert ((self.song1 < self.song2) == False)
 
     
