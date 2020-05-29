@@ -15,7 +15,7 @@ from web.handlers import HandlerException
 
 class Handler(ABC):
 
-    def __init__(self, subscription=None):
+    def __init__(self):
         self.manager = SessionManager()
         self.conn = self.connection()
         self.args = request.args

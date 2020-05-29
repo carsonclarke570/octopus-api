@@ -10,7 +10,7 @@ from internal.session.manager import SessionManager
 class AuthHandler(Handler):
 
     def run(self):
-        code = self.args.get('code');
+        code = self.args.get('code')
         if code is None:
             raise HandlerException('Missing "code" query parameter!')
 
