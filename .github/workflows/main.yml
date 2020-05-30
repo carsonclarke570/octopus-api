@@ -33,7 +33,7 @@ jobs:
     - name: Upload coverage report
       uses: codecov/codecov-action@v1
       with:
-        key: ${{ secrets.CODECOV_KEY }}
+        token: ${{ secrets.CODECOV_KEY }}
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella

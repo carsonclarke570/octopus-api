@@ -9,9 +9,3 @@ class APIResponse:
         }
         self.redirect = redirect
 
-class HandlerException(Exception):
-
-    def __init__(self, message):
-        Exception.__init__(self)
-        self.resp = APIResponse(400, {'message': message}).resp
-

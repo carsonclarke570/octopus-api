@@ -10,8 +10,9 @@ from flask import request
 from flask import g
 
 from internal.session.manager import SessionManager
+from util.errors import APIException
+from web.handlers import APIResponse
 from web.spotify.connection import Connection
-from web.handlers import HandlerException
 
 class Handler(ABC):
 
@@ -35,15 +36,16 @@ class Handler(ABC):
     def session(self):
         id = self.args.get('session')
         if id is None:
-            raise HandlerException('Missing "session" query parameter')
+            raise APIException('Missing "session" query parameter')
 
         return self.manager.get(id)     
 
     def handle(self):
         try:
             result = self.run()
-        except HandlerException as e:
-            resp = make_response(e.resp)
+        except APIException as e:
+            resp = APIResponse(400, {'error': e.message})
+            resp = make_response(resp.resp, resp.resp['code'])
             resp.headers['Access-Control-Allow-Origin'] = '*'
             return resp
 
@@ -64,7 +66,7 @@ class SSEHandler(Handler):
 
         id = self.args.get('session')
         if id is None:
-            return HandlerException('Missing "session" query parameter').resp
+            return APIResponse(400, {'error': 'Missing "session" query parameter'})
 
         def stream():
             ps = self.manager.red.pubsub()
@@ -87,7 +89,7 @@ class SSEUpdateHandler(Handler):
     def handle(self):
         id = self.args.get('session')
         if id is None:
-            return HandlerException('Missing "session" query parameter').resp
+            return APIResponse(400, {'error': 'Missing "session" query parameter'})
 
         resp = super().handle()
         self.manager.red.publish(self.sub + id, u'')
