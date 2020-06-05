@@ -10,11 +10,11 @@ from internal.session.manager import SessionManager
 class AuthHandler(Handler):
 
     def run(self):
-        code = self.args.get('code');
+        code = self.args.get('code')
         if code is None:
             raise HandlerException('Missing "code" query parameter!')
 
-        c = self.conn
+        c = self.connection()
         acc, ref = auth.get_tokens(c.client_id, c.client_secret, code)
         if acc is None or ref is None:
             raise HandlerException('Failed to retrieve access and refresh tokens')

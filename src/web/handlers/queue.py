@@ -10,9 +10,6 @@ from internal.squeue.song import Song
 
 class ReadQueueHandler(Handler):
 
-    def __init__(self):
-        Handler.__init__(self)
-
     def run(self):
         queue = self.session()
         
@@ -27,8 +24,8 @@ class ReadQueueHandler(Handler):
 
 class StreamQueueHandler(SSEHandler):
 
-    def __init__(self):
-        SSEHandler.__init__(self, 'queue')
+    def __init__(self, args):
+        SSEHandler.__init__(self, 'queue', args=args)
 
     def run(self):
         queue = self.session()
@@ -43,8 +40,8 @@ class StreamQueueHandler(SSEHandler):
 
 class AddToQueueHandler(SSEUpdateHandler):
 
-    def __init__(self):
-        SSEUpdateHandler.__init__(self, 'queue')
+    def __init__(self, args, body):
+        SSEUpdateHandler.__init__(self, 'queue', args=args, body=body)
 
     def run(self):
         id = self.args.get('session')
