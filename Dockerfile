@@ -9,4 +9,4 @@ RUN pip install --no-cache -r requirements.txt
 EXPOSE 5000
 
 COPY . .
-CMD ["gunicorn", "--chdir", "./src", "--worker-class", "gevent", "--workers", "4", "--bind", "0.0.0.0:5000", "--preload", "app:app"]
+CMD ["gunicorn", "--chdir", "./src", "--worker-class", "gevent", "--workers", "4", "--bind", "0.0.0.0:5000", "app:app"]
