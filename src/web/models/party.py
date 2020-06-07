@@ -4,7 +4,8 @@ class Party(db.Model):
     __tablename__ = 'Party'
 
     id = db.Column(db.Integer, primary_key=True)
-    queue_id = db.Column(db.Integer, db.ForeignKey('Queue.id'), nullable=True)
+    queue_id = db.Column(db.Integer, db.ForeignKey('Queue.id'))
+    host_id = db.Column(db.Integer, db.ForeignKey('Host.id'))
 
     name = db.Column(db.String(255))
     code = db.Column(db.String(5), unique=True)
