@@ -16,10 +16,10 @@ from web.spotify.connection import Connection
 
 class Handler(ABC):
 
-    def __init__(self, args=None, body=None):
+    def __init__(self):
         self.manager = SessionManager()
-        self.args = args
-        self.body = body
+        self.args = request.args
+        self.body = request.get_json()
 
     @abstractmethod
     def run(self):
@@ -58,8 +58,8 @@ class Handler(ABC):
 
 class SSEHandler(Handler):
 
-    def __init__(self, subscription, args=None, body=None):
-        Handler.__init__(self, args, body)
+    def __init__(self, subscription):
+        Handler.__init__(self)
         self.sub = subscription
 
     def handle(self):
@@ -82,8 +82,8 @@ class SSEHandler(Handler):
 
 class SSEUpdateHandler(Handler):
 
-    def __init__(self, subscription, args=None, body=None):
-        Handler.__init__(self, args, body)
+    def __init__(self, subscription):
+        Handler.__init__(self)
         self.sub = subscription
 
     def handle(self):

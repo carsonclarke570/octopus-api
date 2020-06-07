@@ -1,10 +1,12 @@
-from flask_restplus import Namespace, Resource
+from flask_restx  import Namespace, Resource
 
-api = Namespace('health', description='Enpoints for querying API health')
+from web.handlers.health import HealthHandler
+
+api = Namespace('health', description='Querying for various API services health')
 
 @api.route('/')
 class APIHealth(Resource):
 
     @api.doc('check_alive')
     def get(self):
-        return "Healthy"
+        return HealthHandler().handle()

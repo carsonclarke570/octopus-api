@@ -28,11 +28,11 @@ class TestHandlerClass():
     def setup_method(self):
         os.environ['CLIENT_ID'] = "ID"
         os.environ['CLIENT_SECRET'] = "SECRET"
-        self.handler = ExHandler(
-            args={'session': 1}
-        )
-        self.handler.manager = mock.MagicMock()
-        self.handler.manager.get = mock.MagicMock(return_value=Session('auth', 'refr'))
+        with flask.Flask(__name__).test_request_context('/test'):
+            self.handler = ExHandler()
+            self.handler.args = {'session': 1}
+            self.handler.manager = mock.MagicMock()
+            self.handler.manager.get = mock.MagicMock(return_value=Session('auth', 'refr'))
 
     def teardown_method(self):
         del os.environ['CLIENT_ID']

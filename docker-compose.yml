@@ -4,12 +4,17 @@ services:
         build: .
         environment: 
             - PYTHONUNBUFFERED=1
-            - CLIENT_ID=d85f7cf27fea462498777339f76c038b
-            - CLIENT_SECRET=069aaa68855142a3838cf7b333cabcd9
+            - MYSQL_USER=root
+            - MYSQL_PASS=password
+            - MYSQL_HOST=db
+            - MYSQL_DB=octopus_db
         ports:
             - 5000:5000
         depends_on:
             - db
+            - keystore
+            - admin
+
     db:
         image: mysql:latest
         restart: always
@@ -21,6 +26,10 @@ services:
             - '3306'
         volumes:
             - ./sql/up.sql:/docker-entrypoint-initdb.d/1.up.sql
+
+    keystore:
+        image: redis:alpine        
+
     admin:
         image: phpmyadmin/phpmyadmin
         links: 

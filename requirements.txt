@@ -1,6 +1,10 @@
+cryptography
 Flask==1.1.1
-flask-restplus==0.13.0
+flask_restx
+Flask-SQLAlchemy
+pymysql
 pytest
 pytest-cov
 requests
+redis
 Werkzeug==0.16.1

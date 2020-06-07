@@ -6,7 +6,7 @@ from internal.session.session import Session
 class SessionManager:
 
     def __init__(self):
-        self.red = redis.Redis(host='redis_db')
+        self.red = redis.Redis(host='keystore')
 
     def add(self, session):
         id = int(self.red.get('session_seed')) + 1

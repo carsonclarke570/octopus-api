@@ -1,8 +1,8 @@
 from flask import request
 import time
 
+from util.errors import APIException
 from web.handlers import APIResponse
-from web.handlers import HandlerException
 from web.handlers.handler import Handler
 from web.handlers.handler import SSEHandler
 from web.handlers.handler import SSEUpdateHandler
@@ -24,8 +24,8 @@ class ReadQueueHandler(Handler):
 
 class StreamQueueHandler(SSEHandler):
 
-    def __init__(self, args):
-        SSEHandler.__init__(self, 'queue', args=args)
+    def __init__(self):
+        SSEHandler.__init__(self, 'queue')
 
     def run(self):
         queue = self.session()
@@ -40,21 +40,21 @@ class StreamQueueHandler(SSEHandler):
 
 class AddToQueueHandler(SSEUpdateHandler):
 
-    def __init__(self, args, body):
-        SSEUpdateHandler.__init__(self, 'queue', args=args, body=body)
+    def __init__(self):
+        SSEUpdateHandler.__init__(self, 'queue')
 
     def run(self):
         id = self.args.get('session')
         if id is None:
-            raise HandlerException('Missing "session" query parameter')
+            raise APIException('Missing "session" query parameter')
 
         song = self.body.get('song')
         if song is None:
-            raise HandlerException('Missing parameter "song" in body')
+            raise APIException('Missing parameter "song" in body')
 
         sid = self.body.get('id')
         if sid is None:
-            raise HandlerException('Missing parameter "id" in body')
+            raise APIException('Missing parameter "id" in body')
             
         song = Song(song, sid)
 
